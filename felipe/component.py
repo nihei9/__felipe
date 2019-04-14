@@ -1,30 +1,4 @@
-class Config:
-    def __init__(self, ctype, base, unique_keys, label_keys, appearance):
-        self.__type = ctype
-        self.__base = base
-        self.__unique_keys = unique_keys
-        self.__label_keys = label_keys
-        self.__appearance = appearance
-    
-    @property
-    def component_type(self):
-        return self.__type
-    
-    @property
-    def base(self):
-        return self.__base
-    
-    @property
-    def unique_keys(self):
-        return self.__unique_keys
-    
-    @property
-    def label_keys(self):
-        return self.__label_keys
-    
-    @property
-    def appearance(self):
-        return self.__appearance
+import json
 
 class Component:
     def __init__(self, conf, attributes):
@@ -94,3 +68,43 @@ class Component:
         if (not self.__relations.get(component.component_id)):
             self.__relations[component.component_id] = []
         self.__relations[component.component_id].extend(relations)
+
+class Relation:
+    def __init__(self, conf, attributes):
+        """
+        Parameters
+        ----------
+        conf : Config
+            Configration of relation
+        attributes : Dict
+            Attributes of relation
+        """
+
+        self.__conf = conf
+        self.__attributes = attributes
+    
+    @property
+    def relation_type(self):
+        return self.__conf.relation_type
+    
+    @property
+    def attributes(self):
+        return self.__attributes
+
+def load(filename, conf):
+    with open(filename, mode = 'r') as f:
+        data = json.load(f)
+        kind = data.get("kind")
+        if (kind != "component"):
+            return None
+        
+        c = Component(conf.components[data["component"]["type"]], data["component"])
+        
+        for ddata in data["dependencies"]:
+            dc = Component(conf.components[ddata["type"]], ddata)
+            
+            for rdata in ddata["relations"]:
+                r = Relation(conf.relations[rdata["type"]], rdata)
+                c.relate_to(dc, r)
+        
+        return c
