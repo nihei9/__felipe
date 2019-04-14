@@ -89,10 +89,10 @@ def format_attrs(label, attrs):
         
         if (s != ""):
             s += " "
-        s += "%s = %s" % (k, v)
+        s += f'{k} = {v}'
     
     if (s != ""):
         s += " "
-    s += "label = \"%s\"" % label
+    s += f'label = "{label}"'
     
-    return "[%s]" % s
+    return f'[{s}]'

@@ -39,7 +39,7 @@ def main():
             continue
         
         basename = os.path.basename(filename)
-        output_filename = os.path.join(out_dir, "%s.dot" % basename)
+        output_filename = os.path.join(out_dir, f'{basename}.dot')
         if (f.kind == "component"):
             dot.write_component(conf, f, components, output_filename)
         elif (f.kind == "group"):
